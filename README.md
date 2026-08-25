@@ -1,31 +1,57 @@
 # Computer-Use Flight Simulator
 
-Computer-Use Flight Simulator is a local evaluation environment for testing how browser agents
-recover from interface failures, respect action boundaries, preserve evidence, and hand control to
-a human. It uses fictional business records and reversible local side effects only.
+Computer-Use Flight Simulator is a local test range for browser agents. It runs 12 deterministic
+business-operation scenarios, injects interface and state failures, evaluates the process taken,
+and blocks stale trajectory replay. Every record is fictional and every side effect stays inside
+the local simulator.
 
 Source project: [project-ideas #237](https://github.com/jpequegn/project-ideas/issues/237).
 
-## Requirements
+## Quick Start
 
-- Node.js 22 or newer
-- npm 10 or newer
-
-## Development
+Requirements: Node.js 22+, npm 10+, and Chromium installed through Playwright.
 
 ```bash
 npm install
-npm run check
+npx playwright install chromium
+npm run demo
 ```
 
-The initial repository contains only the strict TypeScript and CI foundation. Scenario contracts,
-the synthetic application, browser execution, process evaluators, replay gates, and review packets
-are tracked in repository issues.
+`npm run demo` builds the application, runs all 12 scenarios in headless Chromium without API
+keys, and writes trajectories, replay manifests, review packets, and a suite summary under
+`artifacts/`.
 
-## Safety Boundary
+To use the interactive synthetic console:
 
-The project must not connect to production systems, retain real browser histories, accept real
-credentials, or execute arbitrary scenario scripts. All demonstrations use generated fictional
-records and deterministic fixture state.
+```bash
+npm run build
+npm run cufs -- serve
+```
+
+Open `http://127.0.0.1:4317`. To run one fixture and inspect its report:
+
+```bash
+npm run cufs -- run invoice-deceptive-confirm
+npm run cufs -- list
+```
+
+## What It Tests
+
+- Clean invoice, account, and report workflows
+- Slow loading and layout movement
+- Deceptive controls, expired sessions, stale tabs, and concurrent record changes
+- Duplicate submissions, missing fields, and revoked capabilities
+- Process safety, evidence coverage, recovery quality, and human handoff
+- Replay compatibility across intent, state, UI, capabilities, evidence, risk, and expiry
+
+## Documentation
+
+- [Usage and CLI](docs/USAGE.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Security model](docs/SECURITY.md)
+- [Capabilities and extensions](docs/CAPABILITIES.md)
+- [Generated review packet](examples/reports/README.md)
+
+Run the complete local release gate with `npm run release:check`.
 
 Licensed under the MIT License.

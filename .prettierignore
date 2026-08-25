@@ -3,3 +3,7 @@ coverage
 node_modules
 package-lock.json
 web-dist
+examples/manifests/*.json
+examples/trajectories/*.json
+examples/reports/*.json
+examples/reports/[0-9a-f]*.md

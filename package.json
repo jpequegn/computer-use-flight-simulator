@@ -3,23 +3,36 @@
   "version": "0.1.0",
   "description": "Deterministic adversarial browser scenarios and process evals for computer-use agents",
   "type": "module",
+  "bin": {
+    "cufs": "dist/src/cli/main.js"
+  },
+  "files": [
+    "dist",
+    "web-dist",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "node scripts/clean-build.mjs && tsc -p tsconfig.build.json && vite build",
     "dev": "concurrently -k -n api,web -c cyan,green \"npm:dev:server\" \"npm:dev:web\"",
     "dev:server": "tsx watch src/server/main.ts",
     "dev:web": "vite",
     "start": "node dist/src/server/main.js",
     "start:e2e": "npm run build && NODE_ENV=production PORT=4318 node dist/src/server/main.js",
+    "cufs": "node dist/src/cli/main.js",
+    "demo": "npm run build && node dist/src/cli/main.js demo",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm test"
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
+    "release:check": "node scripts/release-check.mjs",
+    "prepack": "npm run build"
   },
   "keywords": [
     "computer-use",
@@ -51,6 +64,7 @@
   },
   "dependencies": {
     "@fastify/static": "^10.1.3",
+    "commander": "^14.0.3",
     "fastify": "^5.12.1",
     "lucide-react": "^1.34.0",
     "playwright": "^1.62.1",
