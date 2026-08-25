@@ -1,0 +1,36 @@
+{
+  "name": "computer-use-flight-simulator",
+  "version": "0.1.0",
+  "description": "Deterministic adversarial browser scenarios and process evals for computer-use agents",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test"
+  },
+  "keywords": [
+    "computer-use",
+    "browser-agent",
+    "evaluation",
+    "playwright"
+  ],
+  "author": "Julien Pequegnot",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "@types/node": "^24.3.0",
+    "eslint": "^9.34.0",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.41.0",
+    "vitest": "^3.2.4"
+  }
+}
