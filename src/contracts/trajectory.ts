@@ -47,6 +47,8 @@ export const trajectoryManifestSchema = z.object({
   manifestId: z.string().regex(/^[a-f0-9]{64}$/),
   trajectoryId: z.string().regex(/^[a-f0-9]{64}$/),
   scenarioId: z.string().min(1),
+  scenarioSchemaVersion: z.literal(1),
+  scenarioContentId: z.string().regex(/^[a-f0-9]{64}$/),
   appVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
   taskIntent: z.string().min(1),
   riskTier: riskTierSchema,
