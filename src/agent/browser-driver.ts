@@ -120,6 +120,28 @@ export class PlaywrightAgentDriver implements AgentDriver {
     );
   }
 
+  public retry(reasonCode: string): Promise<void> {
+    this.builder.record({
+      action: "retry",
+      target: "scenario-state",
+      result: "succeeded",
+      reasonCode,
+      evidence: []
+    });
+    return Promise.resolve();
+  }
+
+  public replan(reasonCode: string): Promise<void> {
+    this.builder.record({
+      action: "replan",
+      target: "scenario-state",
+      result: "succeeded",
+      reasonCode,
+      evidence: []
+    });
+    return Promise.resolve();
+  }
+
   public async claimComplete(): Promise<void> {
     const receipt = this.page.getByText(/Action recorded:/).first();
     const text = await this.visibleText(receipt, "completion-receipt");

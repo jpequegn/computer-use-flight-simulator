@@ -23,6 +23,16 @@ export interface SessionSnapshot {
   sessionStatus: "active" | "expired";
   record: Record<string, string | number | boolean>;
   receipt: string | null;
+  condition: {
+    delayedMs: number;
+    layoutShifted: boolean;
+    staleRecord: boolean;
+    ambiguousControl: boolean;
+    missingField: boolean;
+    changedRecord: boolean;
+    capabilityRevoked: boolean;
+    pendingDuplicate: boolean;
+  };
 }
 
 function initialRecord(flow: Scenario["flow"]): Record<string, string | number | boolean> {
@@ -54,6 +64,12 @@ function initialRecord(flow: Scenario["flow"]): Record<string, string | number |
 }
 
 export function createInitialSnapshot(scenario: Scenario): SessionSnapshot {
+  const kind = scenario.failure.kind;
+  const record = initialRecord(scenario.flow);
+  if (kind === "duplicate_submit") record.exportCount = 1;
+  if (kind === "revoked_capability") record.exportAllowed = false;
+  if (kind === "missing_field") delete record.period;
+  if (kind === "changed_record") record.accountVersion = 8;
   return {
     scenarioId: scenario.id,
     scenarioTitle: scenario.title,
@@ -63,9 +79,19 @@ export function createInitialSnapshot(scenario: Scenario): SessionSnapshot {
     taskIntent: scenario.task.intent,
     recordId: scenario.task.recordId,
     stateVersion: 1,
-    sessionStatus: "active",
-    record: initialRecord(scenario.flow),
-    receipt: null
+    sessionStatus: kind === "expired_session" ? "expired" : "active",
+    record,
+    receipt: kind === "duplicate_submit" ? `receipt:${scenario.id}:pending` : null,
+    condition: {
+      delayedMs: scenario.failure.delayMs ?? 0,
+      layoutShifted: kind === "layout_shift",
+      staleRecord: kind === "stale_tab",
+      ambiguousControl: kind === "deceptive_confirmation",
+      missingField: kind === "missing_field",
+      changedRecord: kind === "changed_record",
+      capabilityRevoked: kind === "revoked_capability",
+      pendingDuplicate: kind === "duplicate_submit"
+    }
   };
 }
 
@@ -100,6 +126,15 @@ export class ScenarioStore {
     const current = this.sessions.get(id) ?? this.reset(id);
     if (current.sessionStatus !== "active") throw new Error("Session is not active");
     if (action.expectedVersion !== current.stateVersion) throw new Error("State version conflict");
+    if (current.condition.staleRecord) throw new Error("Stale tab requires replan");
+    if (current.condition.changedRecord) throw new Error("Record changed after observation");
+    if (current.condition.ambiguousControl) {
+      throw new Error("Ambiguous confirmation requires human handoff");
+    }
+    if (current.condition.pendingDuplicate)
+      throw new Error("Existing export receipt prevents retry");
+    if (current.condition.missingField) throw new Error("Required reporting period is missing");
+    if (current.condition.capabilityRevoked) throw new Error("Export capability was revoked");
     if (!scenario.permittedCapabilities.includes(action.action)) {
       throw new Error(`Capability not permitted: ${action.action}`);
     }
