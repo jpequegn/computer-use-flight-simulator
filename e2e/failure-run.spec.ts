@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { runAgentOnPage } from "../src/agent/runner.js";
 import { ScriptedPolicyAdapter } from "../src/agent/scripted-adapter.js";
+import { evaluateProcess } from "../src/evaluation/process-evaluator.js";
 import { SCENARIOS } from "../src/fixtures/scenarios.js";
 
 const expectations = {
@@ -31,5 +32,6 @@ for (const [id, [outcome, processAction]] of Object.entries(expectations)) {
     expect(result.trajectory.sideEffectCount).toBe(
       id === "invoice-slow-load" || id === "invoice-layout-shift" ? 1 : 0
     );
+    expect(evaluateProcess(scenario, result.trajectory).verdict).toBe("pass");
   });
 }

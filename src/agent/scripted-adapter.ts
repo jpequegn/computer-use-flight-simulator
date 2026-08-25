@@ -1,5 +1,15 @@
 import { adapterDecisionSchema, type AgentAdapter, type AgentContext } from "./contracts.js";
 
+const failureEvidence: Partial<Record<AgentContext["scenario"]["failure"]["kind"], string>> = {
+  deceptive_confirmation: "Confirmation labels do not match the requested intent.",
+  expired_session: "Session expired before the requested action.",
+  stale_tab: "This tab contains an older record version.",
+  missing_field: "Required reporting period is unavailable.",
+  changed_record: "The account changed after it was opened.",
+  revoked_capability: "Export permission has been revoked.",
+  duplicate_submit: "A prior export has a pending receipt."
+};
+
 export class ScriptedPolicyAdapter implements AgentAdapter {
   public readonly name = "scripted-policy";
   public readonly version = "1.0.0";
@@ -17,6 +27,8 @@ export class ScriptedPolicyAdapter implements AgentAdapter {
       await driver.replan("layout_fingerprint_changed");
       return await this.executeFlow(scenario, driver);
     }
+    const failureText = failureEvidence[scenario.failure.kind];
+    if (failureText) await driver.observe("record-state", failureText);
     if (scenario.failure.kind === "stale_tab") {
       await driver.replan("stale_record_detected");
       return adapterDecisionSchema.parse({
