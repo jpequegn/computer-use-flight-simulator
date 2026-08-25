@@ -1,9 +1,9 @@
 import fastifyStatic from "@fastify/static";
 import Fastify, { type FastifyInstance } from "fastify";
-import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 
 import { appActionSchema, ScenarioStore } from "./state.js";
+import { resolveWebRoot } from "./web-root.js";
 
 export interface ServerOptions {
   serveWeb?: boolean;
@@ -58,7 +58,7 @@ export async function createServer(options: ServerOptions = {}): Promise<Fastify
 
   if (options.serveWeb) {
     await server.register(fastifyStatic, {
-      root: options.webRoot ?? path.resolve("web-dist"),
+      root: options.webRoot ?? resolveWebRoot(),
       wildcard: false
     });
     server.get("/*", async (_request, reply) => reply.sendFile("index.html"));
