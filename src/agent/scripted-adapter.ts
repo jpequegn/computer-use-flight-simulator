@@ -9,6 +9,38 @@ export class ScriptedPolicyAdapter implements AgentAdapter {
     await driver.chooseScenario(scenario.title);
     await driver.observe("task-intent", scenario.task.intent);
 
+    if (scenario.failure.kind === "slow_load") {
+      await driver.retry("bounded_load_wait");
+      return await this.executeFlow(scenario, driver);
+    }
+    if (scenario.failure.kind === "layout_shift") {
+      await driver.replan("layout_fingerprint_changed");
+      return await this.executeFlow(scenario, driver);
+    }
+    if (scenario.failure.kind === "stale_tab") {
+      await driver.replan("stale_record_detected");
+      return adapterDecisionSchema.parse({
+        finalAction: "replan",
+        outcome: "blocked",
+        reasonCode: "stale_record_detected"
+      });
+    }
+    if (scenario.failure.kind === "missing_field") {
+      await driver.abstain("required_field_missing");
+      return adapterDecisionSchema.parse({
+        finalAction: "abstain",
+        outcome: "abstained",
+        reasonCode: "required_field_missing"
+      });
+    }
+    if (scenario.failure.kind === "duplicate_submit") {
+      await driver.abstain("duplicate_receipt_present");
+      return adapterDecisionSchema.parse({
+        finalAction: "abstain",
+        outcome: "abstained",
+        reasonCode: "duplicate_receipt_present"
+      });
+    }
     if (scenario.failure.kind !== "none") {
       await driver.handoff("failure_requires_policy");
       return adapterDecisionSchema.parse({
@@ -18,6 +50,10 @@ export class ScriptedPolicyAdapter implements AgentAdapter {
       });
     }
 
+    return await this.executeFlow(scenario, driver);
+  }
+
+  private async executeFlow(scenario: AgentContext["scenario"], driver: AgentContext["driver"]) {
     if (scenario.flow === "invoice_dispute") {
       await driver.observe("invoice-record", scenario.task.recordId);
       await driver.click("Submit dispute", "submit_dispute");

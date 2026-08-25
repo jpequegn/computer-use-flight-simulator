@@ -261,6 +261,11 @@ button {
   background: #eaf7ee;
   border-color: #b2dabe;
 }
+.notice.warning {
+  color: #765000;
+  background: #fff8e6;
+  border-color: #e7c66e;
+}
 .operation-surface {
   max-width: 1120px;
   margin: 0 auto;
@@ -357,6 +362,36 @@ button {
   background: #dce2e0;
   border-color: #c3ccca;
 }
+.layout-shifted .panel-layout {
+  grid-template-columns: 330px minmax(0, 1fr);
+}
+.layout-shifted .action-panel {
+  grid-column: 1;
+  grid-row: 1;
+  border-left: 0;
+  border-right: 1px solid #dfe4e2;
+}
+.layout-shifted .panel-layout > div:first-child {
+  grid-column: 2;
+}
+.action-panel .danger-action {
+  background: #a43b36;
+  border-color: #7f2925;
+}
+.action-panel .secondary-action {
+  margin-top: 0;
+  color: #263b38;
+  background: #fff;
+  border-color: #9baba7;
+}
+.missing-field {
+  padding: 10px;
+  color: #765000;
+  background: #fff;
+  border: 1px dashed #d1a844;
+  border-radius: 4px;
+  font-size: 12px;
+}
 .loading {
   display: grid;
   place-items: center;
@@ -400,6 +435,20 @@ button {
   }
   .panel-layout {
     grid-template-columns: 1fr;
+  }
+  .layout-shifted .panel-layout {
+    grid-template-columns: 1fr;
+  }
+  .layout-shifted .action-panel,
+  .layout-shifted .panel-layout > div:first-child {
+    grid-column: 1;
+  }
+  .layout-shifted .panel-layout > div:first-child {
+    grid-row: 1;
+  }
+  .layout-shifted .action-panel {
+    grid-row: 2;
+    border-right: 0;
   }
   .action-panel {
     min-height: 230px;

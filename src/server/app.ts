@@ -1,6 +1,7 @@
 import fastifyStatic from "@fastify/static";
 import Fastify, { type FastifyInstance } from "fastify";
 import path from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 
 import { appActionSchema, ScenarioStore } from "./state.js";
 
@@ -27,7 +28,9 @@ export async function createServer(options: ServerOptions = {}): Promise<Fastify
   );
   server.post<{ Params: { id: string } }>("/api/sessions/:id/reset", async (request, reply) => {
     try {
-      return store.reset(request.params.id);
+      const snapshot = store.reset(request.params.id);
+      if (snapshot.condition.delayedMs > 0) await delay(snapshot.condition.delayedMs);
+      return snapshot;
     } catch (error) {
       return reply
         .code(404)

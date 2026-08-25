@@ -17,6 +17,8 @@ export interface AgentDriver {
   observe(label: string, locatorText: string): Promise<void>;
   fill(label: string, value: string, capability: Capability): Promise<void>;
   click(buttonName: string, capability: Capability): Promise<void>;
+  retry(reasonCode: string): Promise<void>;
+  replan(reasonCode: string): Promise<void>;
   claimComplete(): Promise<void>;
   handoff(reasonCode: string): Promise<void>;
   abstain(reasonCode: string): Promise<void>;

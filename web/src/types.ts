@@ -20,4 +20,14 @@ export interface SessionSnapshot {
   sessionStatus: "active" | "expired";
   record: Record<string, string | number | boolean>;
   receipt: string | null;
+  condition: {
+    delayedMs: number;
+    layoutShifted: boolean;
+    staleRecord: boolean;
+    ambiguousControl: boolean;
+    missingField: boolean;
+    changedRecord: boolean;
+    capabilityRevoked: boolean;
+    pendingDuplicate: boolean;
+  };
 }
