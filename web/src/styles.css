@@ -367,8 +367,10 @@ button {
 
 @media (max-width: 800px) {
   .app-shell {
-    grid-template: 68px auto minmax(0, 1fr) / 1fr;
-    grid-template-areas: "topbar" "nav" "workspace";
+    display: block;
+  }
+  .topbar {
+    height: 68px;
   }
   .scenario-nav {
     border-right: 0;
@@ -384,6 +386,7 @@ button {
   }
   .workspace {
     padding: 20px 14px 30px;
+    overflow: visible;
   }
   .task-band {
     grid-template-columns: 1fr;
