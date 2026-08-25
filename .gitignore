@@ -9,3 +9,4 @@ coverage/
 artifacts/
 playwright-report/
 test-results/
+web-dist/
